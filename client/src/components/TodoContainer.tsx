@@ -11,7 +11,7 @@ export default function TodoContainer(): JSX.Element {
     const [inputValue, setInputValue] = useState<string>('');
 
     useEffect(() => {
-        fetch("http://localhost:8080/list", { mode: "cors" })
+        fetch("http://localhost:8000/list", { mode: "cors" })
             .then((response) => response.json())
             .then((response) => setTodoItems(response))
             .catch((error) => console.error(error));
