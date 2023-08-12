@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+
+const { testDatabaseConnection } = require('./database');
+
 const port = 8080;
 
 // mock todo
@@ -17,7 +20,6 @@ const listItems = [
     { "id": 10, "item": "Create a personalized cocktail", "isCompleted": false }
 ];
 
-
 // Allow requests from any origin
 app.use(cors());
 
@@ -32,7 +34,8 @@ app.get('/list', (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`✅ Server is running on port ${port} ✅`);
 });
 
-
+// test the database connection
+testDatabaseConnection();

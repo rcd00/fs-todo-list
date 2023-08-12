@@ -28,8 +28,10 @@ export default function TodoContainer(): JSX.Element {
             return;
         }
 
+        const newId = todoItems.length > 0 ? todoItems[todoItems.length - 1].id + 1 : 0;
+
         const newItem: TodoItem = {
-            id: 0,
+            id: newId,
             item: inputValue,
             isCompleted: false
         };
@@ -52,8 +54,6 @@ export default function TodoContainer(): JSX.Element {
             <ul className="TodoList p-5">
                 {todoItems.map((todo) => {
                     const { id, item, isCompleted } = todo;
-
-                    console.log(`${item} -- ${isCompleted}`);
 
                     return (
                         <li key={id} className='flex'>
