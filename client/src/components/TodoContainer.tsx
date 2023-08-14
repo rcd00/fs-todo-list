@@ -1,21 +1,21 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+
 
 interface TodoItem {
-    id: number;
+    id?: number;
     item: string;
-    isCompleted: boolean;
+    status: string;
+    createDate: Date
 }
 
-export default function TodoContainer(): JSX.Element {
-    const [todoItems, setTodoItems] = useState<TodoItem[]>([]);
-    const [inputValue, setInputValue] = useState<string>('');
+interface Props {
+    todoItems: TodoItem[];
+    getData: () => Promise<void>;
+}
 
-    useEffect(() => {
-        fetch("http://localhost:8000/list", { mode: "cors" })
-            .then((response) => response.json())
-            .then((response) => setTodoItems(response))
-            .catch((error) => console.error(error));
-    }, []);
+export default function TodoContainer({ todoItems, getData }: Props): JSX.Element {
+    console.log(todoItems)
+    const [inputValue, setInputValue] = useState<string>('');
 
     function handleChange(e: ChangeEvent<HTMLInputElement>): void {
         setInputValue(e.target.value);
@@ -28,23 +28,35 @@ export default function TodoContainer(): JSX.Element {
             return;
         }
 
-        const newId = todoItems.length > 0 ? todoItems[todoItems.length - 1].id + 1 : 0;
-
         const newItem: TodoItem = {
-            id: newId,
             item: inputValue,
-            isCompleted: false
+            status: 'incomplete',
+            createDate: new Date()
         };
 
-        setTodoItems([...todoItems, newItem]);
-        setInputValue('');
+        const postData = async (e: any) => {
+            e.preventDefault()
+            try {
+                const response = await fetch("http://localhost:8000/list", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newItem)
+                })
+
+                if (response.status === 200) {
+                    getData();
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        postData(e)
+        setInputValue('')
     }
 
-    function handleCheckboxChange(id: number): void {
-        const updatedTodos: TodoItem[] = todoItems.map((todo) =>
-            todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
-        );
-        setTodoItems(updatedTodos);
+    function handleCheckboxChange(): void {
+        console.log('handleCheckboxChange')
     }
 
     return (
@@ -53,12 +65,12 @@ export default function TodoContainer(): JSX.Element {
 
             <ul className="TodoList p-5">
                 {todoItems.map((todo) => {
-                    const { id, item, isCompleted } = todo;
+                    const { id, item, status } = todo;
 
                     return (
                         <li key={id} className='flex'>
-                            <input type="checkbox" className="default:ring-2 ..." onChange={() => handleCheckboxChange(id)} />
-                            <div className={`px-2 text-left ${isCompleted ? 'text-amber-400' : 'text-red-600'}`}>{item}</div>
+                            <input type="checkbox" className="default:ring-2 ..." onChange={handleCheckboxChange} />
+                            <div className={`px-2 text-left ${status === 'complete' ? 'text-amber-400' : 'text-red-600'}`}>{item}</div>
                         </li>
                     );
                 })}

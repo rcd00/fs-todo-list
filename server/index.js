@@ -1,32 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const { v4: uuidv4 } = require('uuid');
 
 const { pool, testDatabaseConnection } = require('./db');
 
 const PORT = process.env.PORT ?? 8000;
-
-// mock todo
-// const listItems = [
-//     { "id": 1, "item": "Explore a hidden cave", "isCompleted": false },
-//     { "id": 2, "item": "Learn to play the guitar", "isCompleted": false },
-//     { "id": 3, "item": "Write a short story", "isCompleted": false },
-//     { "id": 4, "item": "Visit a bustling night market", "isCompleted": false },
-//     { "id": 5, "item": "Try a new exotic cuisine", "isCompleted": false },
-//     { "id": 6, "item": "Start a rooftop garden", "isCompleted": false },
-//     { "id": 7, "item": "Take a scenic road trip", "isCompleted": false },
-//     { "id": 8, "item": "Learn a magic trick", "isCompleted": false },
-//     { "id": 9, "item": "Attend a live theater performance", "isCompleted": false },
-//     { "id": 10, "item": "Create a personalized cocktail", "isCompleted": false }
-// ];
-
-// app.get('/list', (req, res) => {
-//     try {
-//         res.json(listItems);
-//     } catch (error) {
-//         console.log(error);
-//     }
-// });
 
 // Start the server
 app.listen(PORT, () => {
@@ -35,18 +14,42 @@ app.listen(PORT, () => {
 
 // Allow requests from any origin
 app.use(cors());
+app.use(express.json());
+
 
 // Define a simple endpoint
 app.get('/', (req, res) => {
     res.send('Hello, this is your API!');
 });
 
+// get all todos
 app.get('/list', async (req, res) => {
     try {
         const todos = await pool.query('SELECT * FROM todos');
         res.json(todos.rows);
     } catch (error) {
         console.log(error);
+    }
+});
+
+// create new todo
+app.post('/list', async (req, res) => {
+    const { item, isCreated, createDate } = req.body;
+    const id = uuidv4();
+
+    console.log({ item, createDate });
+
+
+    try {
+        const query = 'INSERT INTO todos(id, item, status, createDate) VALUES ($1, $2, $3, $4)';
+        const values = [id, item, isCreated, createDate];
+
+        await pool.query(query, values);
+        res.status(200).send('Todo added successfully');
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error adding todo');
     }
 });
 
