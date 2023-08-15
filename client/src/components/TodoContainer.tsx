@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import CheckContainer from './CheckContainer';
+import moment from 'moment';
 
 interface TodoItem {
     id?: string;
@@ -77,6 +78,30 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
 
     }
 
+    async function handleArchive(todo: TodoItem): Promise<void> {
+
+        const archivedTodo = {
+            ...todo,
+            progress: 'archived',
+            last_updated: new Date()
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8000/list/${todo.id}`, {
+                method: "PUT",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(archivedTodo)
+            })
+
+            if (response.status === 200) {
+                getData();
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
     async function handleDelete(todo: TodoItem): Promise<void> {
 
         try {
@@ -91,29 +116,50 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
         } catch (error) {
             console.log(error)
         }
-
     }
 
+    const archivedList = todoItems.filter(item => item.progress === 'archived')
+    const incompleteList = todoItems.filter(item => item.progress === 'incomplete')
+    const completeList = todoItems.filter(item => item.progress === 'complete')
+
+    const renderList = (listTitle: string, list: TodoItem[]) => {
+
+        return (
+            <div>
+                <h2 className='font-medium text-xl'>{listTitle}</h2>
+                <ul className="TodoList p-5">
+                    {list.map((todo) => {
+                        const { id, item, progress, create_date } = todo;
+                        const createdDate = moment(create_date).fromNow()
+
+                        const isArchived = progress === 'archived'
+
+                        return (
+                            <li key={id} className='flex w-auto space py-1'>
+                                {!isArchived && <CheckContainer progress={progress} onClick={() => handleCheckboxChange(todo)} />}
+                                <div className='p-3'>
+                                    <span className={`text-left ${progress === 'complete' && 'line-through text-gray-500'}`}>{item}</span>
+                                    <span className=' text-xs text-left block'>{createdDate}</span>
+                                </div>
+                                <div className='ml-auto p-3 flex gap-x-2'>
+                                    {!isArchived && <button className='border border-stone-950 rounded-md p-1 text-xs hover:bg-' onClick={() => handleArchive(todo)}>archive</button>}
+                                    <button className='border border-red-600 rounded-md p-1 text-xs hover:bg-red-50' onClick={() => handleDelete(todo)}>delete</button>
+                                </div>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
+        );
+    }
+
+
     return (
-        <div className="TodoContainer border rounded-md border-orange-400 p-10">
-            <h2 className='text-center font-medium text-xl'>Tasks</h2>
+        <div className="TodoContainer p-10 w-4/5">
 
-            <ul className="TodoList p-5">
-                {todoItems.map((todo) => {
-                    const { id, item, progress } = todo;
-
-                    return (
-                        <li key={id} className='flex  w-auto space py-1'>
-                            <CheckContainer progress={progress} onClick={() => handleCheckboxChange(todo)} />
-                            <span className={`p-3 text-left ${progress === 'complete' && 'line-through'}`}>{item}</span>
-                            <div className='ml-auto p-3 flex gap-x-2'>
-                                <span className='border border-red-600 rounded-md p-1 text-xs hover:bg-red-50' onClick={() => console.log('archive')}>archive</span>
-                                <span className='border border-red-600 rounded-md p-1 text-xs hover:bg-red-50' onClick={() => handleDelete(todo)}>delete</span>
-                            </div>
-                        </li>
-                    );
-                })}
-            </ul>
+            {renderList('Tasks', incompleteList)}
+            {renderList('Completed Tasks', completeList)}
+            {renderList('Archived tasks', archivedList)}
 
             <form onSubmit={handleSubmit}>
                 <div className="Input">

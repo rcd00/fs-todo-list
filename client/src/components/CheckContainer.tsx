@@ -12,9 +12,9 @@ export default function CheckContainer({ progress, onClick }: Props) {
     const checkMark = (width: string) => progress === 'complete' ? <Complete className={width} /> : <Incomplete className={width} />
 
     return (
-        <div onClick={onClick}>
+        <button onClick={onClick}>
             {checkMark('w-8')}
-        </div>
+        </button>
     )
 
 }
