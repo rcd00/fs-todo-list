@@ -66,8 +66,23 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
             })
 
             if (response.status === 200) {
-                console.log('sorting')
-                console.log(todoItems)
+                getData();
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+    async function handleDelete(todo: TodoItem): Promise<void> {
+
+        try {
+            const response = await fetch(`http://localhost:8000/list/${todo.id}`, {
+                method: "DELETE",
+                headers: { 'Content-Type': 'application/json' },
+            })
+
+            if (response.status === 200) {
                 getData();
             }
         } catch (error) {
@@ -88,7 +103,7 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
                         <li key={id} className='flex'>
                             <input type="checkbox" checked={progress === 'complete'} className="default:ring-2 ..." onChange={() => handleCheckboxChange(todo)} />
                             <div className={`px-2 text-left ${progress === 'complete' ? 'text-amber-400' : 'text-red-600'}`}>{item}</div>
-                            <p className=' text-right pl-10'>x</p>
+                            <p className=' text-right pl-10' onClick={() => handleDelete(todo)}>x</p>
                         </li>
                     );
                 })}

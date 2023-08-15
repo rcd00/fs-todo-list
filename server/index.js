@@ -66,6 +66,20 @@ app.put('/list/:id', async (req, res) => {
     }
 });
 
+// delete todo
+app.delete('/list/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deleteTodo = await pool.query('DELETE FROM todos WHERE id = $1;', [id]);
+        res.json(deleteTodo);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json('Internal server error');
+    }
+});
+
 // test the database connection
 testDatabaseConnection();
 
