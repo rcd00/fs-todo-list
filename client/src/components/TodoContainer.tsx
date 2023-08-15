@@ -6,6 +6,7 @@ interface TodoItem {
     item: string;
     progress: string;
     create_date: Date
+    last_updated: Date
 }
 
 interface Props {
@@ -30,7 +31,8 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
         const newItem: TodoItem = {
             item: inputValue,
             progress: 'incomplete',
-            create_date: new Date()
+            create_date: new Date(),
+            last_updated: new Date()
         };
 
         try {
@@ -55,7 +57,8 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
 
         const updatedTodo = {
             ...todo,
-            progress: todo.progress === 'incomplete' ? 'complete' : 'incomplete'
+            progress: todo.progress === 'incomplete' ? 'complete' : 'incomplete',
+            last_updated: new Date()
         };
 
         try {

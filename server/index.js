@@ -53,11 +53,11 @@ app.post('/list', async (req, res) => {
 // edit todo
 app.put('/list/:id', async (req, res) => {
     const { id } = req.params;
-    const { progress } = req.body;
+    const { progress, last_updated } = req.body;
 
     try {
         const editProgress =
-            await pool.query('UPDATE todos SET progress = $1 WHERE id = $2;', [progress, id]);
+            await pool.query('UPDATE todos SET progress = $1, last_updated = $2 WHERE id = $3;', [progress, last_updated, id]);
         res.json(editProgress);
 
     } catch (error) {
