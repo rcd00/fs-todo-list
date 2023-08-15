@@ -2,10 +2,10 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 
 
 interface TodoItem {
-    id?: number;
+    id?: string;
     item: string;
-    status: string;
-    createDate: Date
+    progress: string;
+    create_date: Date
 }
 
 interface Props {
@@ -14,14 +14,13 @@ interface Props {
 }
 
 export default function TodoContainer({ todoItems, getData }: Props): JSX.Element {
-    console.log(todoItems)
     const [inputValue, setInputValue] = useState<string>('');
 
     function handleChange(e: ChangeEvent<HTMLInputElement>): void {
         setInputValue(e.target.value);
     }
 
-    function handleSubmit(e: FormEvent<HTMLFormElement>): void {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
         e.preventDefault();
 
         if (inputValue.trim() === '') {
@@ -30,33 +29,51 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
 
         const newItem: TodoItem = {
             item: inputValue,
-            status: 'incomplete',
-            createDate: new Date()
+            progress: 'incomplete',
+            create_date: new Date()
         };
 
-        const postData = async (e: any) => {
-            e.preventDefault()
-            try {
-                const response = await fetch("http://localhost:8000/list", {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newItem)
-                })
+        try {
+            const response = await fetch("http://localhost:8000/list", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newItem)
+            })
 
-                if (response.status === 200) {
-                    getData();
-                }
-            } catch (error) {
-                console.log(error)
+            if (response.status === 200) {
+                getData();
             }
+        } catch (error) {
+            console.log(error)
         }
 
-        postData(e)
         setInputValue('')
+
     }
 
-    function handleCheckboxChange(): void {
-        console.log('handleCheckboxChange')
+    async function handleCheckboxChange(todo: TodoItem): Promise<void> {
+
+        const updatedTodo = {
+            ...todo,
+            progress: todo.progress === 'incomplete' ? 'complete' : 'incomplete'
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8000/list/${todo.id}`, {
+                method: "PUT",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedTodo)
+            })
+
+            if (response.status === 200) {
+                console.log('sorting')
+                console.log(todoItems)
+                getData();
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
     }
 
     return (
@@ -65,12 +82,13 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
 
             <ul className="TodoList p-5">
                 {todoItems.map((todo) => {
-                    const { id, item, status } = todo;
+                    const { id, item, progress } = todo;
 
                     return (
                         <li key={id} className='flex'>
-                            <input type="checkbox" className="default:ring-2 ..." onChange={handleCheckboxChange} />
-                            <div className={`px-2 text-left ${status === 'complete' ? 'text-amber-400' : 'text-red-600'}`}>{item}</div>
+                            <input type="checkbox" checked={progress === 'complete'} className="default:ring-2 ..." onChange={() => handleCheckboxChange(todo)} />
+                            <div className={`px-2 text-left ${progress === 'complete' ? 'text-amber-400' : 'text-red-600'}`}>{item}</div>
+                            <p className=' text-right pl-10'>x</p>
                         </li>
                     );
                 })}

@@ -34,15 +34,12 @@ app.get('/list', async (req, res) => {
 
 // create new todo
 app.post('/list', async (req, res) => {
-    const { item, isCreated, createDate } = req.body;
+    const { item, progress, create_date } = req.body;
     const id = uuidv4();
 
-    console.log({ item, createDate });
-
-
     try {
-        const query = 'INSERT INTO todos(id, item, status, createDate) VALUES ($1, $2, $3, $4)';
-        const values = [id, item, isCreated, createDate];
+        const query = 'INSERT INTO todos(id, item, progress, create_date) VALUES ($1, $2, $3, $4)';
+        const values = [id, item, progress, create_date];
 
         await pool.query(query, values);
         res.status(200).send('Todo added successfully');
@@ -50,6 +47,22 @@ app.post('/list', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Error adding todo');
+    }
+});
+
+// edit todo
+app.put('/list/:id', async (req, res) => {
+    const { id } = req.params;
+    const { progress } = req.body;
+
+    try {
+        const editProgress =
+            await pool.query('UPDATE todos SET progress = $1 WHERE id = $2;', [progress, id]);
+        res.json(editProgress);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json('Internal server error');
     }
 });
 
