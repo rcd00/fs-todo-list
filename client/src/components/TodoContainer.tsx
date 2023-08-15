@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-
+import CheckContainer from './CheckContainer';
 
 interface TodoItem {
     id?: string;
@@ -93,17 +93,20 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
 
     return (
         <div className="TodoContainer border rounded-md border-orange-400 p-10">
-            <h2 className='text-center font-medium text-xl'>Todo List</h2>
+            <h2 className='text-center font-medium text-xl'>Tasks</h2>
 
             <ul className="TodoList p-5">
                 {todoItems.map((todo) => {
                     const { id, item, progress } = todo;
 
                     return (
-                        <li key={id} className='flex'>
-                            <input type="checkbox" checked={progress === 'complete'} className="default:ring-2 ..." onChange={() => handleCheckboxChange(todo)} />
-                            <div className={`px-2 text-left ${progress === 'complete' ? 'text-amber-400' : 'text-red-600'}`}>{item}</div>
-                            <p className=' text-right pl-10' onClick={() => handleDelete(todo)}>x</p>
+                        <li key={id} className='flex  w-auto space py-1'>
+                            <CheckContainer progress={progress} onClick={() => handleCheckboxChange(todo)} />
+                            <span className={`p-3 text-left ${progress === 'complete' && 'line-through'}`}>{item}</span>
+                            <div className='ml-auto p-3 flex gap-x-2'>
+                                <span className='border border-red-600 rounded-md p-1 text-xs hover:bg-red-50' onClick={() => console.log('archive')}>archive</span>
+                                <span className='border border-red-600 rounded-md p-1 text-xs hover:bg-red-50' onClick={() => handleDelete(todo)}>delete</span>
+                            </div>
                         </li>
                     );
                 })}
