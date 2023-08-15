@@ -1,6 +1,9 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import CheckContainer from './CheckContainer';
 import moment from 'moment';
+
+import { ReactComponent as DeleteIcon } from '../../src/assets/delete.svg';
+
+import CheckContainer from './CheckContainer';
 
 interface TodoItem {
     id?: string;
@@ -78,32 +81,7 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
 
     }
 
-    async function handleArchive(todo: TodoItem): Promise<void> {
-
-        const archivedTodo = {
-            ...todo,
-            progress: 'archived',
-            last_updated: new Date()
-        };
-
-        try {
-            const response = await fetch(`http://localhost:8000/list/${todo.id}`, {
-                method: "PUT",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(archivedTodo)
-            })
-
-            if (response.status === 200) {
-                getData();
-            }
-        } catch (error) {
-            console.log(error)
-        }
-
-    }
-
     async function handleDelete(todo: TodoItem): Promise<void> {
-
         try {
             const response = await fetch(`http://localhost:8000/list/${todo.id}`, {
                 method: "DELETE",
@@ -118,7 +96,6 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
         }
     }
 
-    const archivedList = todoItems.filter(item => item.progress === 'archived')
     const incompleteList = todoItems.filter(item => item.progress === 'incomplete')
     const completeList = todoItems.filter(item => item.progress === 'complete')
 
@@ -132,18 +109,15 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
                         const { id, item, progress, create_date } = todo;
                         const createdDate = moment(create_date).fromNow()
 
-                        const isArchived = progress === 'archived'
-
                         return (
                             <li key={id} className='flex w-auto space py-1'>
-                                {!isArchived && <CheckContainer progress={progress} onClick={() => handleCheckboxChange(todo)} />}
+                                <CheckContainer progress={progress} onClick={() => handleCheckboxChange(todo)} />
                                 <div className='p-3'>
                                     <span className={`text-left ${progress === 'complete' && 'line-through text-gray-500'}`}>{item}</span>
-                                    <span className=' text-xs text-left block'>{createdDate}</span>
+                                    <span className=' text-xs text-left block text-gray-800	'>{createdDate}</span>
                                 </div>
                                 <div className='ml-auto p-3 flex gap-x-2'>
-                                    {!isArchived && <button className='border border-stone-950 rounded-md p-1 text-xs hover:bg-' onClick={() => handleArchive(todo)}>archive</button>}
-                                    <button className='border border-red-600 rounded-md p-1 text-xs hover:bg-red-50' onClick={() => handleDelete(todo)}>delete</button>
+                                    <button className='w-8' onClick={() => handleDelete(todo)}><DeleteIcon className='w-5' /></button>
                                 </div>
                             </li>
                         );
@@ -155,19 +129,20 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
 
 
     return (
-        <div className="TodoContainer p-10 w-4/5">
+        <div className="TodoContainer w-4/5">
 
             {renderList('Tasks', incompleteList)}
             {renderList('Completed Tasks', completeList)}
-            {renderList('Archived tasks', archivedList)}
 
             <form onSubmit={handleSubmit}>
                 <div className="Input">
                     <label className="block">
                         <span className="text-lg block pb-2 text-center">Add to-do</span>
                     </label>
-                    <input type="text" onChange={handleChange} value={inputValue} className="p-3 bg-white border shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1" placeholder="to-do" />
-                    <button className='border rounded-md my-2 p-2 w-full' type="submit">Submit</button>
+                    <div className='w-4/5 flex  flex-col items-center m-auto gap-3'>
+                        <input type="text" onChange={handleChange} value={inputValue} className="p-3 w-full bg-white border shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1 text-center" placeholder="to-do" />
+                        <button className='border rounded-md p-2 m-auto' type="submit">Submit</button>
+                    </div>
                 </div>
             </form>
         </div>
