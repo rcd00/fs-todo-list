@@ -34,12 +34,12 @@ app.get('/list', async (req, res) => {
 
 // create new todo
 app.post('/list', async (req, res) => {
-    const { item, progress, create_date } = req.body;
+    const { title, progress, create_date, last_updated } = req.body;
     const id = uuidv4();
 
     try {
-        const query = 'INSERT INTO todos(id, item, progress, create_date) VALUES ($1, $2, $3, $4)';
-        const values = [id, item, progress, create_date];
+        const query = 'INSERT INTO todos(id, title, progress, create_date, last_updated) VALUES ($1, $2, $3, $4, $5)';
+        const values = [id, title, progress, create_date, last_updated];
 
         await pool.query(query, values);
         res.status(200).send('Todo added successfully');
@@ -53,11 +53,14 @@ app.post('/list', async (req, res) => {
 // edit todo
 app.put('/list/:id', async (req, res) => {
     const { id } = req.params;
-    const { progress, last_updated } = req.body;
+    const { progress, title, last_updated } = req.body;
+
+    const query = 'UPDATE todos SET progress = $1, last_updated = $2, title = $3 WHERE id = $4;';
+    const values = [progress, last_updated, title, id];
 
     try {
         const editProgress =
-            await pool.query('UPDATE todos SET progress = $1, last_updated = $2 WHERE id = $3;', [progress, last_updated, id]);
+            await pool.query(query, values);
         res.json(editProgress);
 
     } catch (error) {
@@ -70,8 +73,11 @@ app.put('/list/:id', async (req, res) => {
 app.delete('/list/:id', async (req, res) => {
     const { id } = req.params;
 
+    const query = 'DELETE FROM todos WHERE id = $1;';
+    const values = [id];
+
     try {
-        const deleteTodo = await pool.query('DELETE FROM todos WHERE id = $1;', [id]);
+        const deleteTodo = await pool.query(query, values);
         res.json(deleteTodo);
 
     } catch (error) {

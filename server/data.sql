@@ -6,13 +6,13 @@ DROP TABLE todos;
 
 CREATE TABLE todos(
     id VARCHAR(300) PRIMARY KEY,
-    item VARCHAR(300), 
+    title VARCHAR(300), 
     progress VARCHAR(300),
     create_date VARCHAR(300),
     last_updated VARCHAR(300)
 );
 
-INSERT INTO todos(id, item, progress, create_date, last_updated)
+INSERT INTO todos(id, title, progress, create_date, last_updated)
 VALUES
     ('7ca5871c-d2e4-4813-a46f-e156643d3379', 'Explore a hidden cave', 'incomplete', 'Sat Aug 12 2023 19:51:48 GMT-0400 (Eastern Daylight Time)', 'Sat Aug 12 2023 19:51:48 GMT-0400 (Eastern Daylight Time)'),
     ('5004d616-7f3e-485e-a54d-e8c15c82fb7d', 'Learn to play the guitar', 'incomplete', 'Sat Aug 12 2023 19:51:53 GMT-0400 (Eastern Daylight Time)', 'Sat Aug 12 2023 19:51:53 GMT-0400 (Eastern Daylight Time)'),

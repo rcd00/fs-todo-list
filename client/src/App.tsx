@@ -21,7 +21,7 @@ function App() {
   const sortedItems = todoItems.sort((a, b) => {
     var dateA = new Date(a['last_updated']).getTime()
     var dateB = new Date(b['last_updated']).getTime()
-    return dateA - dateB;
+    return dateB - dateA;
   })
 
   return (
