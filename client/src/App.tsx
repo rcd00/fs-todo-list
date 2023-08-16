@@ -25,7 +25,7 @@ function App() {
   })
 
   return (
-    <div className="App m-20" >
+    <div className="App m-20 flex justify-center">
       <TodoContainer todoItems={sortedItems} getData={getData} />
     </div>
   );

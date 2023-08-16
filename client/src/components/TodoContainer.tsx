@@ -161,8 +161,8 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
                         <div className="flex">
                             <CheckContainer progress={progress} onClick={() => handleEditTodo(todo, 'progress')} />
                             <div className='p-3'>
-                                <span className={`text-left ${progress === PROGRESS.COMPLETE && 'line-through text-gray-500'}`}>{title}</span>
-                                <span className=' text-xs text-left block text-gray-800	'>{lastUpdated}</span>
+                                <p className={`text-left ${progress === PROGRESS.COMPLETE && 'line-through text-gray-500'}`}>{title}</p>
+                                <p className=' text-xs text-left block text-gray-800	'>{lastUpdated}</p>
                             </div>
 
                         </div>
@@ -193,25 +193,25 @@ export default function TodoContainer({ todoItems, getData }: Props): JSX.Elemen
 
         return (
             <div>
-                <h2 className='font-medium text-xl'>{listTitle}</h2>
-                {list.length ? listMarkup : <div>List empty</div>}
+                <h2 className='font-medium text-2xl'>{listTitle}</h2>
+                {list.length ? listMarkup : <p className='text-center text-lg'>List is empty</p>}
 
             </div>
         );
     }
 
     return (
-        <div className="TodoContainer w-4/5">
+        <div className="TodoContainer w-2/4">
             {renderList('Tasks', incompleteList)}
             {renderList('Completed Tasks', completeList)}
 
             <form onSubmit={handleSubmit}>
                 <div className="Input">
                     <label className="block">
-                        <span className="text-lg block pb-2 text-center">Add task</span>
+                        <p className="text-lg block pb-2 text-center">Add task</p>
                     </label>
                     <div className='w-4/5 flex  flex-col items-center m-auto gap-3'>
-                        <input type="text" onChange={handleChange} value={newTitle} className="p-3 w-full bg-white border shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1 text-center" placeholder="Write a new task" />
+                        <input type="text" onChange={handleChange} value={newTitle} className="p-3 w-2/4 bg-white border shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 block rounded-md sm:text-sm focus:ring-1 text-center" placeholder="Write a new task" />
                         <button className='border rounded-md p-2 m-auto' type="submit">Add</button>
                     </div>
                 </div>
