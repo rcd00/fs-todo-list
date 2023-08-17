@@ -2,7 +2,7 @@
 
 CREATE DATABASE todolist;
 
-DROP TABLE todos;
+-- DROP TABLE todos; -- to drop table (and restart db)
 
 CREATE TABLE todos(
     id VARCHAR(300) PRIMARY KEY,
@@ -27,19 +27,3 @@ VALUES
 
 
 SELECT * FROM todos;
-
--- USERS:
-
-DROP TABLE users;
-
-CREATE TABLE users (
-    user_name VARCHAR(255) PRIMARY KEY,
-    hashed_password VARCHAR(255),
-    create_date VARCHAR(300)
-);
-
-INSERT INTO users(user_name, hashed_password, create_date)
-VALUES
-( 'firstUser','firstPassword','Wed Aug 16 2023 11:28:24 GMT-0400 (Eastern Daylight Time)');
-
-SELECT * FROM users;
